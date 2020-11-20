@@ -1,22 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TinderCards.css";
 import TinderCard from "react-tinder-card";
+import database from "../../firebase.js";
 
 function TinderCards() {
-  const [people, setPeople] = useState([
-    {
-      name: "john",
-      url: "http://placekitten.com/200/300",
-    },
-    {
-      name: "dave",
-      url: "http://placekitten.com/200/301",
-    },
-  ]);
+  const [people, setPeople] = useState([]);
+
+  //   Piece of code which runs based on a condition
+  useEffect(() => {
+    const unsubscribe = database
+      .collection("people")
+      .onSnapshot((snapshot) =>
+        setPeople(snapshot.docs.map((doc) => doc.data()))
+      );
+
+    return () => {
+      //   This is the clean up
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <div>
-      <h1>Test</h1>
       <div className="tinderCards__cardContainer">
         {people.map((person) => (
           <TinderCard
